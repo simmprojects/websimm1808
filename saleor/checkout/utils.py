@@ -314,7 +314,7 @@ def update_cart_quantity(cart):
 
 
 def add_variant_to_cart(
-        cart, variant, quantity=1, replace=False, check_quantity=True):
+        cart, variant, quantity=1, replace=False, check_quantity=True, param_file=None):
     """Add a product variant to cart.
 
     The `data` parameter may be used to differentiate between items with
@@ -338,7 +338,8 @@ def add_variant_to_cart(
             variant.check_quantity(new_quantity)
 
         line.quantity = new_quantity
-        line.save(update_fields=['quantity'])
+        line.param_file = param_file
+        line.save(update_fields=['quantity', 'param_file'])        
 
     update_cart_quantity(cart)
 
@@ -853,10 +854,10 @@ def _process_user_data_for_order(cart):
     """Fetch, process and return shipping data from cart."""
     billing_address = cart.billing_address
 
-    if cart.user:
-        store_user_address(cart.user, billing_address, AddressType.BILLING)
-        if cart.user.addresses.filter(pk=billing_address.pk).exists():
-            billing_address = billing_address.get_copy()
+    #if cart.user:
+        #store_user_address(cart.user, billing_address, AddressType.BILLING)
+        #if cart.user.addresses.filter(pk=billing_address.pk).exists():
+            #billing_address = billing_address.get_copy()
 
     return {
         'user': cart.user,
@@ -870,7 +871,7 @@ def _fill_order_with_cart_data(order, cart, discounts, taxes):
 
     for line in cart:
         add_variant_to_order(
-            order, line.variant, line.quantity, discounts, taxes)
+            order, line.variant, line.quantity, line.param_file, discounts, taxes)
 
     if cart.note:
         order.customer_note = cart.note
@@ -901,7 +902,8 @@ def create_order(cart, tracking_code, discounts, taxes):
     order_data.update({
         'language_code': get_language(),
         'tracking_client_id': tracking_code,
-        'total': cart.get_total(discounts, taxes)})
+        'total': cart.get_total(discounts, taxes),
+        'quantity': cart.quantity})
 
     order = Order.objects.create(**order_data)
 

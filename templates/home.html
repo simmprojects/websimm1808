@@ -10,7 +10,6 @@
             <div class="home--content-wrapper">
               <div class="home--content-inner">
                 <h1>{% trans "Promo & Sale" context "Homepage title" %}</h1>
-                <h2>{% trans "from the Northpole" context "Homepage title" %}</h2>
                   <a class="btn btn-secondary home__button" href="#">
                     {% trans "Shop now" context "Homepage action" %}
                   </a>
@@ -46,14 +45,6 @@
         </div>
       </div>
     </div>
-    {% if products %}
-      <div class="home__featured">
-        <h2 class="text-center">{% trans "Featured products" context "Homepage title" %}</h2>
-        <div class="row">
-          {% include "product/_items.html" %}
-        </div>
-      </div>
-    {% endif %}
     <script type="application/ld+json">{{ webpage_schema|safe }}</script>
   </div>
 {% endblock %}

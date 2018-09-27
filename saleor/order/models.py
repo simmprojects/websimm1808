@@ -9,6 +9,7 @@ from django.db.models import F, Max, Sum
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import pgettext_lazy
+from django.utils import timezone
 from django_measurement.models import MeasurementField
 from django_prices.models import MoneyField, TaxedMoneyField
 from measurement.measures import Weight
@@ -16,7 +17,7 @@ from payments import PaymentStatus, PurchasedItem
 from payments.models import BasePayment
 from prices import Money, TaxedMoney
 
-from . import FulfillmentStatus, OrderStatus
+from . import FulfillmentStatus, OrderStatus, JobStatus
 from ..account.models import Address
 from ..core.models import BaseNote
 from ..core.utils import build_absolute_uri
@@ -24,6 +25,8 @@ from ..core.utils.taxes import ZERO_TAXED_MONEY
 from ..core.weight import WeightUnits, zero_weight
 from ..discount.models import Voucher
 from ..shipping.models import ShippingMethod
+
+import os, shutil
 
 
 class OrderQueryset(models.QuerySet):
@@ -98,6 +101,8 @@ class Order(models.Model):
     weight = MeasurementField(
         measurement=Weight, unit_choices=WeightUnits.CHOICES,
         default=zero_weight)
+    quantity = models.IntegerField(default=0)
+    
     objects = OrderQueryset.as_manager()
 
     class Meta:
@@ -209,6 +214,16 @@ class OrderLine(models.Model):
         net_field='unit_price_net', gross_field='unit_price_gross')
     tax_rate = models.DecimalField(
         max_digits=5, decimal_places=2, default='0.0')
+    work_dir = models.CharField(max_length=255, blank=True, null=True)
+    param_file = models.FileField(name='param_file', blank=True, null=True)
+    result_file = models.FileField(name='result_file', blank=True, null=True)
+    upload_name = models.CharField(max_length=255, blank=True, null=True)
+    download_name = models.CharField(max_length=255, blank=True, null=True, default='results.zip')
+    status = models.CharField(
+        max_length=32, default=JobStatus.DRAFT,
+        choices=JobStatus.CHOICES)
+    exe_name = models.CharField(max_length=255, default='exe.py')
+    work_base = models.CharField(max_length=255, blank=True, null=True)    
 
     def __str__(self):
         return self.product_name
@@ -219,6 +234,25 @@ class OrderLine(models.Model):
     @property
     def quantity_unfulfilled(self):
         return self.quantity - self.quantity_fulfilled
+    
+    def set_work_dir(self, id):
+        now_time = now().strftime("%Y-%m-%d")
+        self.work_dir = self.work_base + str(id) + '/' + now_time + '/'
+        os.makedirs(self.work_dir)
+        return self.work_dir
+    
+    def set_param_file(self, param_f):
+        self.param_file = self.work_dir + self.upload_name
+        #need to be altered accordingly
+        try:
+            shutil.copy('/data/srcs/saleor/saleor-v2018.08/saleor'+param_f.url, self.param_file)
+        except:
+            pass
+        return self.param_file
+
+    def set_result_file(self, id):
+        self.result_file = '/media/saved_files/result_files/' + str(id) + '/' + self.download_name
+        return self.result_file    
 
 
 class Fulfillment(models.Model):

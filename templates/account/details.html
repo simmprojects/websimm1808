@@ -38,11 +38,6 @@
         </li>
         {% endif %}
         <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href="#addresses" role="tab">
-            <h3>{% trans "Addresses book" context "User profile tab" %}</h3>
-          </a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" data-toggle="tab" href="#settings" role="tab">
             <h3>{% trans "Settings" context "User profile tab" %}</h3>
           </a>
@@ -58,14 +53,11 @@
                 <div class="col-md-2 col-3">
                   <small>{% trans "Order" context "Recent orders column title" %}</small>
                 </div>
-                <div class="col-md-3 d-none d-md-block">
+                <div class="col-md-6 d-none d-md-block text-center">
                   <small>{% trans "Date" context "Recent orders column title" %}</small>
                 </div>
-                <div class="col-md-2 col-4 text-right">
-                  <small>{% trans "Summary" context "Recent orders column title" %}</small>
-                </div>
-                <div class="col-md-4 d-none d-md-block">
-                  <small>{% trans "Status" context "Recent orders column title" %}</small>
+                <div class="col-md-3 col-4 text-center">
+                  <small>{% trans "Quantity" context "Recent orders column title" %}</small>
                 </div>
                 <div class="col-md-1 col-5"></div>
               </div>
@@ -76,16 +68,11 @@
                   <div class="col-md-2 col-3">
                     {{ order }}
                   </div>
-                  <div class="col-md-3 d-none d-md-block">
+                  <div class="col-md-6 d-none d-md-block text-center">
                     {{ order.created }}
                   </div>
-                  <div class="col-md-2 col-4">
-                    <span class="float-right">
-                      {% price order.total.gross %}
-                    </span>
-                  </div>
-                  <div class="col-md-4 d-none d-md-block">
-                    {% render_order_status order.status order.get_status_display %}
+                  <div class="col-md-3 col-4 text-center">
+                    {{ order.quantity }}
                   </div>
                   <div class="col-md-1 col-5">
                     <a href="{{ order.get_absolute_url }}" class="float-right link--styled">

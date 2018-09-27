@@ -1441,6 +1441,30 @@ msgctxt "Product published toggle"
 msgid "Published"
 msgstr ""
 
+msgctxt "Product upload toggle"
+msgid "Needupload"
+msgstr ""
+
+msgctxt "Product download toggle"
+msgid "Needdownload"
+msgstr ""
+
+msgctxt "Product upload change toggle"
+msgid "Uploadchange"
+msgstr ""
+
+msgctxt "Product download change toggle"
+msgid "Downloadchange"
+msgstr ""
+
+msgctxt "Product upload name toggle"
+msgid "Uploadname"
+msgstr ""
+
+msgctxt "Product download name toggle"
+msgid "Downloadname"
+msgstr ""
+
 #: saleor/dashboard/product/forms.py:225
 msgctxt "Charge taxes on product"
 msgid "Charge taxes on this product"

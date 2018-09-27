@@ -35,6 +35,7 @@ def get_variant_picker_data(
             'priceUndiscounted': price_as_dict(price_undiscounted),
             'attributes': variant.attributes,
             'priceLocalCurrency': price_as_dict(price_local_currency),
+            'needupload': variant.is_need_upload,            
             'schemaData': schema_data}
         data['variants'].append(variant_data)
 

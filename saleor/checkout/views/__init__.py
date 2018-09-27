@@ -12,7 +12,7 @@ from ..forms import CartShippingMethodForm, CountryForm, ReplaceCartLineForm
 from ..models import Cart
 from ..utils import (
     check_product_availability_and_warn, get_cart_data,
-    get_cart_data_for_checkout, get_or_empty_db_cart, get_taxes_for_cart,
+        get_cart_data_for_checkout, get_or_empty_db_cart, get_taxes_for_cart, create_order,
     is_valid_shipping_method, update_cart_quantity)
 from .discount import add_voucher_form, validate_voucher
 from .shipping import (
@@ -23,6 +23,10 @@ from .summary import (
 from .validators import (
     validate_cart, validate_is_shipping_required, validate_shipping_address,
     validate_shipping_method)
+from ...core import analytics
+from ...order.emails import send_order_confirmation
+from ...core.exceptions import InsufficientStock
+from django.utils.translation import pgettext, pgettext_lazy
 
 
 @get_or_empty_db_cart(Cart.objects.for_display())
@@ -79,9 +83,9 @@ def checkout_shipping_method(request, cart):
 
 
 @get_or_empty_db_cart(Cart.objects.for_display())
-@validate_voucher
+#@validate_voucher
 @validate_cart
-@add_voucher_form
+#@add_voucher_form
 def checkout_summary(request, cart):
     """Display the correct order summary."""
     if cart.is_shipping_required():
@@ -89,7 +93,30 @@ def checkout_summary(request, cart):
         view = validate_shipping_address(view)
         return view(request, cart)
     if request.user.is_authenticated:
-        return summary_without_shipping(request, cart)
+        #return summary_without_shipping(request, cart)
+
+        #this is a temp code for submit function
+        try:
+            order = create_order(
+                    cart=cart,
+                    tracking_code=analytics.get_client_id(request),
+                    discounts=request.discounts,
+                    #taxes=get_taxes_for_cart(cart, request.taxes))
+                    taxes='standard')
+        except InsufficientStock:
+            return redirect('cart:index')
+    
+        if not order:
+            msg = pgettext('Checkout warning', 'Please review your checkout.')
+            messages.warning(request, msg)
+            return redirect('checkout:summary')
+    
+        user = cart.user
+        cart.delete()
+        msg = pgettext_lazy('Order status history entry', 'Order was placed')
+        order.history.create(user=user, content=msg)
+        #send_order_confirmation.delay(order.pk)
+        return redirect('order:details', token=order.token)
     return anonymous_summary_without_shipping(request, cart)
 
 
@@ -138,7 +165,8 @@ def cart_index(request, cart):
     ctx = {
         'cart_lines': cart_lines,
         'country_form': country_form,
-        'shipping_price_range': shipping_price_range}
+        'shipping_price_range': shipping_price_range,
+        'total_quantity': cart.quantity}
     ctx.update(cart_data)
 
     return TemplateResponse(request, 'checkout/index.html', ctx)
@@ -156,7 +184,8 @@ def cart_shipping_options(request, cart):
         shipping_price_range = None
     ctx = {
         'shipping_price_range': shipping_price_range,
-        'country_form': country_form}
+        'country_form': country_form,
+        'total_quantity': cart.quantity}
     cart_data = get_cart_data(
         cart, shipping_price_range, request.currency, request.discounts,
         request.taxes)
@@ -192,6 +221,7 @@ def update_cart_line(request, cart, variant_id):
         if cart:
             cart_total = cart.get_subtotal(discounts, taxes)
             response['total'] = format_money(cart_total.gross)
+            response['total_quantity'] = cart.quantity
             local_cart_total = to_local_currency(cart_total, request.currency)
             if local_cart_total is not None:
                 response['localTotal'] = format_money(local_cart_total.gross)

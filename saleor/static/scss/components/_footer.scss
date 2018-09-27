@@ -1,7 +1,7 @@
 .footer {
   background-color: $gray;
   padding: $global-padding * 2 0;
-  margin-top: $global-margin * 8;
+  margin-top: $global-margin * 2;
   @include media-breakpoint-down(xs) {
     text-align: center;
     margin-top: $global-margin * 2;
@@ -18,10 +18,10 @@
     }
   }
   ul {
+    color: $white;
     list-style: none;
     padding-left: 0;
     a {
-      color: $white;
       line-height: 2;
     }
   }
@@ -32,7 +32,7 @@
       opacity: 0.6;
     }
     &.social-footer {
-      margin-right: $global-margin;
+      margin-left: $global-margin * 2;
     }
   }
 }

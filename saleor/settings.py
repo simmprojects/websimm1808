@@ -51,7 +51,7 @@ CACHES = {'default': django_cache_url.config()}
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://saleor:saleor@localhost:5432/saleor',
+        default='postgres://simm:simm@localhost:5432/simm',
         conn_max_age=600)}
 
 
@@ -160,7 +160,8 @@ TEMPLATES = [{
         'string_if_invalid': '<< MISSING VARIABLE "%s" >>' if DEBUG else ''}}]
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('SECRET_KEY')
+#SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = 'simmkey'
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -259,7 +260,8 @@ if DEBUG:
     DEBUG_TOOLBAR_CONFIG = {
         'RESULTS_STORE_SIZE': 100}
 
-ENABLE_SILK = get_bool_from_env('ENABLE_SILK', False)
+#ENABLE_SILK = get_bool_from_env('ENABLE_SILK', False)
+ENABLE_SILK = True
 if ENABLE_SILK:
     MIDDLEWARE.insert(0, 'silk.middleware.SilkyMiddleware')
     INSTALLED_APPS.append('silk')
@@ -357,7 +359,7 @@ MESSAGE_TAGS = {
 LOW_STOCK_THRESHOLD = 10
 MAX_CART_LINE_QUANTITY = int(os.environ.get('MAX_CART_LINE_QUANTITY', 50))
 
-PAGINATE_BY = 16
+PAGINATE_BY = 12
 DASHBOARD_PAGINATE_BY = 30
 DASHBOARD_SEARCH_LIMIT = 5
 
@@ -371,7 +373,7 @@ bootstrap4 = {
 TEST_RUNNER = ''
 
 ALLOWED_HOSTS = get_list(
-    os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1'))
+    os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,*'))
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 

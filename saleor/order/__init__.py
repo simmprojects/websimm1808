@@ -36,6 +36,29 @@ class OrderStatus:
             'Status for a permanently canceled order',
             'Canceled'))]
 
+class JobStatus:
+    DRAFT = 'draft'
+    QUEUE = 'queue'
+    RUNNING = 'running'
+    DONE = 'done'
+    ERROR = 'error'
+    CHOICES = [
+        (DRAFT, pgettext_lazy(
+            'Status for a fully editable, not confirmed job',
+            'Draft')),
+        (QUEUE, pgettext_lazy(
+            'Status for a job just submitted',
+            'Queue')),
+        (RUNNING, pgettext_lazy(
+            'Status for a job which is running',
+            'Running')),
+        (DONE, pgettext_lazy(
+            'Status for a job which is done',
+            'Done')),
+        (ERROR, pgettext_lazy(
+            'Status for a job caused error',
+            'Error'))]
+
 
 class FulfillmentStatus:
     FULFILLED = 'fulfilled'

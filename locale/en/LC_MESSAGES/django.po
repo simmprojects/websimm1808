@@ -1450,12 +1450,12 @@ msgstr ""
 
 #: templates/base.html:137
 msgid "Search for product"
-msgstr ""
+msgstr "Search for service"
 
 #: templates/base.html:149 templates/base.html:208
 msgctxt "Main navigation item"
 msgid "Your Cart"
-msgstr ""
+msgstr "Service List"
 
 #: templates/base.html:220
 msgctxt "Main navigation item"
@@ -1471,27 +1471,27 @@ msgstr ""
 #: templates/cart_dropdown.html:40
 msgctxt "Cart dropdown text"
 msgid "Shipment and taxes calculated at checkout"
-msgstr ""
+msgstr "Service candidates in list"
 
 #: templates/cart_dropdown.html:54
 msgctxt "Cart dropdown secondary action"
 msgid "Go to cart"
-msgstr ""
+msgstr "Go to service list"
 
 #: templates/cart_dropdown.html:57
 msgctxt "Cart dropdown primary action"
 msgid "Checkout"
-msgstr ""
+msgstr "Submit"
 
 #: templates/cart_dropdown.html:62 templates/checkout/index.html:91
 msgctxt "Empty cart message"
 msgid "There are no products in your shopping cart."
-msgstr ""
+msgstr "Your service list is empty."
 
 #: templates/cart_dropdown.html:67 templates/checkout/index.html:92
 msgctxt "Empty cart link"
 msgid "Check out our sales"
-msgstr ""
+msgstr "Check out our services"
 
 #: templates/category/index.html:7
 msgctxt "Category breadcrumbs home"
@@ -1511,12 +1511,12 @@ msgstr ""
 #: templates/checkout/_subtotal_table.html:56
 msgctxt "Cart summary text"
 msgid "Shipment and taxes calculated at checkout"
-msgstr ""
+msgstr "Service candidates in list"
 
 #: templates/checkout/details.html:7
 msgctxt "Checkout page title"
 msgid "Checkout"
-msgstr ""
+msgstr "Submit"
 
 #: templates/checkout/details.html:12
 msgctxt "Checkout top message"
@@ -1526,7 +1526,7 @@ msgstr ""
 #: templates/checkout/details.html:20
 msgctxt "Checkout title"
 msgid "Checkout"
-msgstr ""
+msgstr "Submit"
 
 #: templates/checkout/details.html:35
 msgctxt "Order review title"
@@ -1566,7 +1566,7 @@ msgstr ""
 #: templates/checkout/index.html:7
 msgctxt "Cart page title"
 msgid "Your cart"
-msgstr ""
+msgstr "Service List"
 
 #: templates/checkout/index.html:12
 msgctxt "Cart breadcrumb"
@@ -1586,7 +1586,7 @@ msgstr ""
 #: templates/checkout/index.html:33
 msgctxt "Cart table header"
 msgid "Quantity"
-msgstr ""
+msgstr "Action"
 
 #: templates/checkout/index.html:36
 msgctxt "Cart table header"
@@ -1596,12 +1596,12 @@ msgstr ""
 #: templates/checkout/index.html:81
 msgctxt "Cart primary action"
 msgid "Checkout"
-msgstr ""
+msgstr "Submit"
 
 #: templates/checkout/index.html:84
 msgctxt "cart page: secondary action, empty the cart"
 msgid "Clear cart"
-msgstr ""
+msgstr "Clear list"
 
 #: templates/checkout/login.html:6
 msgctxt "Checkout login page title"
@@ -1777,6 +1777,22 @@ msgctxt "Dashboard catalogue"
 msgid "Catalogue"
 msgstr ""
 
+msgctxt "Address Item"
+msgid "Web Address"
+msgstr "555 Zu Chong Zhi Road, Zhang Jiang Hi-Tech Park, Pudong, Shanghai"
+
+msgctxt "Telephone Item"
+msgid "Web Telephone"
+msgstr "Tel: +86-21-50806600, Fax: +86-21-50807088"
+
+msgctxt "EMail Item"
+msgid "Web EMail"
+msgstr "E-Mail: suoban@simm.ac.cn"
+
+msgctxt "Copyright Item"
+msgid "Web Copyright"
+msgstr "Copyright@Shanghai Institute of Materia Medica, All Rights Reserved."
+
 #: templates/dashboard/base.html:107 templates/dashboard/product/form.html:28
 #: templates/dashboard/product/list.html:10
 #: templates/dashboard/product/list.html:36
@@ -1822,7 +1838,7 @@ msgid "Vouchers"
 msgstr ""
 
 #: templates/dashboard/base.html:145
-msgctxt "Dashboard sales. `Sales' is noun of to sell"
+msgctxt "Dashboard sales. 'Sales' is noun of to sell"
 msgid "Sales"
 msgstr ""
 
@@ -4157,6 +4173,9 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
+msgid "Needupload"
+msgstr ""
+
 #: templates/dashboard/product/form.html:113
 #, python-format
 msgid ""
@@ -5237,7 +5256,7 @@ msgstr ""
 #: templates/home.html:12
 msgctxt "Homepage title"
 msgid "Promo & Sale"
-msgstr ""
+msgstr "Example Service One"
 
 #: templates/home.html:13
 msgctxt "Homepage title"
@@ -5247,17 +5266,17 @@ msgstr ""
 #: templates/home.html:15 templates/home.html:30 templates/home.html:42
 msgctxt "Homepage action"
 msgid "Shop now"
-msgstr ""
+msgstr "See More"
 
 #: templates/home.html:29
 msgctxt "Homepage title"
 msgid "Size & Colours"
-msgstr ""
+msgstr "Example Service Two"
 
 #: templates/home.html:41
 msgctxt "Homepage title"
 msgid "Digital Downloads"
-msgstr ""
+msgstr "Example Service Three"
 
 #: templates/home.html:51
 msgctxt "Homepage title"
@@ -5311,18 +5330,22 @@ msgstr ""
 #: templates/order/_ordered_items_table.html:32
 #: templates/order/_ordered_items_table.html:173
 msgctxt "Order details column title"
-msgid "Product"
+msgid "Service"
 msgstr ""
 
 #: templates/order/_ordered_items_table.html:37
 #: templates/order/_ordered_items_table.html:178
 msgctxt "Order details column title"
-msgid "Quantity"
+msgid "Status"
 msgstr ""
 
 #: templates/order/_ordered_items_table.html:42
 msgctxt "Order details column title"
-msgid "Price"
+msgid "Result"
+msgstr ""
+
+msgctxt "Order details column title"
+msgid "N/A"
 msgstr ""
 
 #: templates/order/_ordered_items_table.html:85
@@ -5621,7 +5644,7 @@ msgstr ""
 #: templates/product/details.html:175
 msgctxt "Product details primary action"
 msgid "Add to cart"
-msgstr ""
+msgstr "Add to service list"
 
 #: templates/product/details.html:187
 msgctxt "Product details text"

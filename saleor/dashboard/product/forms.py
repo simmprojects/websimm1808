@@ -235,6 +235,8 @@ class ProductForm(forms.ModelForm, AttributesMixin):
                 'Availability date', 'Publish product on'),
             'is_published': pgettext_lazy(
                 'Product published toggle', 'Published'),
+            'is_needupload': pgettext_lazy(
+                'Product upload toggle', 'Needupload'),             
             'charge_taxes': pgettext_lazy(
                 'Charge taxes on product', 'Charge taxes on this product')}
 
@@ -296,8 +298,8 @@ class ProductVariantForm(forms.ModelForm, AttributesMixin):
     class Meta:
         model = ProductVariant
         fields = [
-            'sku', 'price_override', 'weight',
-            'quantity', 'cost_price', 'track_inventory']
+            'sku', 'price_override', 'is_need_upload','is_upload_change','is_download_change','exe_name',
+            'quantity', 'cost_price', 'track_inventory','is_need_download','upload_name','download_name','work_base']
         labels = {
             'sku': pgettext_lazy('SKU', 'SKU'),
             'price_override': pgettext_lazy(
@@ -305,7 +307,23 @@ class ProductVariantForm(forms.ModelForm, AttributesMixin):
             'quantity': pgettext_lazy('Integer number', 'Number in stock'),
             'cost_price': pgettext_lazy('Currency amount', 'Cost price'),
             'track_inventory': pgettext_lazy(
-                'Track inventory field', 'Track inventory')}
+                'Track inventory field', 'Track inventory'),
+            'is_need_upload': pgettext_lazy(
+                'Upload setting', 'Needupload'),
+            'is_need_download': pgettext_lazy(
+                        'Download setting', 'Needdownload'),
+            'is_upload_change': pgettext_lazy(
+                        'Upload change setting', 'Uploadchange'),
+            'is_download_change': pgettext_lazy(
+                        'Download change setting', 'Downloadchange'),
+            'upload_name': pgettext_lazy(
+                        'Upload name setting', 'Uploadname'),
+            'download_name': pgettext_lazy(
+                        'Download name setting', 'Downloadname'),
+            'exe_name': pgettext_lazy(
+                        'Exe name setting', 'Exename'),
+            'work_base': pgettext_lazy(
+                        'Work base setting', 'Workbase')}
         help_texts = {
             'track_inventory': pgettext_lazy(
                 'product variant handle stock field help text',

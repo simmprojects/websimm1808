@@ -225,6 +225,14 @@ class ProductVariant(models.Model):
         measurement=Weight, unit_choices=WeightUnits.CHOICES,
         blank=True, null=True)
     translated = TranslationProxy()
+    is_need_upload = models.BooleanField(default=True)
+    is_need_download = models.BooleanField(default=True)
+    is_upload_change = models.BooleanField(default=False)
+    is_download_change = models.BooleanField(default=False)
+    upload_name = models.CharField(max_length=255, blank=True)
+    download_name = models.CharField(max_length=255, blank=True)
+    exe_name = models.CharField(max_length=255, default='exe.py')
+    work_base = models.CharField(max_length=255, blank=True, null=True)    
 
     class Meta:
         app_label = 'product'

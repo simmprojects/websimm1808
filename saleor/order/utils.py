@@ -8,7 +8,7 @@ from ..core.utils.taxes import (
     ZERO_MONEY, get_tax_rate_by_name, get_taxes_for_address)
 from ..dashboard.order.utils import get_voucher_discount_for_order
 from ..discount.models import NotApplicable
-from ..order import FulfillmentStatus, OrderStatus
+from ..order import FulfillmentStatus, OrderStatus, JobStatus
 from ..order.models import OrderLine
 from ..product.utils import allocate_stock, deallocate_stock, increase_stock
 
@@ -148,7 +148,7 @@ def attach_order_to_user(order, user):
     order.save(update_fields=['user'])
 
 
-def add_variant_to_order(order, variant, quantity, discounts=None, taxes=None):
+def add_variant_to_order(order, variant, quantity, param_file, discounts=None, taxes=None):
     """Add total_quantity of variant to order.
 
     Raises InsufficientStock exception if quantity could not be fulfilled.
@@ -172,7 +172,17 @@ def add_variant_to_order(order, variant, quantity, discounts=None, taxes=None):
             quantity=quantity,
             variant=variant,
             unit_price=variant.get_price(discounts, taxes),
-            tax_rate=get_tax_rate_by_name(variant.product.tax_rate, taxes))
+            tax_rate=get_tax_rate_by_name(variant.product.tax_rate, taxes),
+            download_name=variant.download_name,
+            upload_name=variant.upload_name,
+            exe_name=variant.exe_name,
+            status=JobStatus.QUEUE,
+            work_base=variant.work_base)
+        line = order.lines.get(variant=variant)
+        line.work_dir = line.set_work_dir(line.id)
+        line.param_file = line.set_param_file(param_file)
+        line.result_file = line.set_result_file(line.id)
+        line.save(update_fields=['work_dir', 'param_file', 'result_file'])
 
     if variant.track_inventory:
         allocate_stock(variant, quantity)

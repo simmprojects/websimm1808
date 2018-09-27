@@ -45,28 +45,6 @@
             </div>
           {% endif %}
         {% endfor %}
-        {% for field in filter_set.form %}
-          {% if field.name == 'price' %}
-            <div class="filter-section" aria-expanded="true">
-              <div class="filter-section__header">
-                <h3>{{ field.label }}</h3>
-                <div class="filter-section__icon">
-                  <img class="lazyload lazypreload" data-src="{% static "images/chevron-up.svg" %}">
-                </div>
-              </div>
-              <div class="filter-section__content">
-                <div class="filter-form-field price-field">
-                  <input id="{{ field.auto_id }}_0" name="{{ field.name }}_0"
-                        value="{% if field.value.0 %}{{ field.value.0 }}{% endif %}" type="number" min="0"
-                        class="form-control d-inline"
-                        placeholder="{% trans 'from' context 'Product price filter' %}"/><span>-</span><input id="{{ field.auto_id }}_1" name="{{ field.name }}_1"
-                        value="{% if field.value.1 %}{{ field.value.1 }}{% endif %}" type="number" min="0"
-                        class="form-control d-inline" placeholder="{% trans 'to' context 'Product price filter' %}"/>
-                </div>
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
         <button class="btn primary" type="submit">{% trans 'Update' context 'Apply filters button' %}</button>
       </form>
     </div>
