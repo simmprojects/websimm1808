@@ -232,7 +232,14 @@ class ProductVariant(models.Model):
     upload_name = models.CharField(max_length=255, blank=True)
     download_name = models.CharField(max_length=255, blank=True)
     exe_name = models.CharField(max_length=255, default='exe.py')
-    work_base = models.CharField(max_length=255, blank=True, null=True)    
+    work_base = models.CharField(max_length=255, blank=True, null=True)
+    #is_env_conda = models.BooleanField(default=False)
+    #is_env_virtualenv = models.BooleanField(default=False) 
+    sim_instances = models.IntegerField(
+        validators=[MinValueValidator(0)], default=Decimal(1))
+    run_instances = models.IntegerField(
+        validators=[MinValueValidator(0)], default=Decimal(0))
+    source_file = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         app_label = 'product'

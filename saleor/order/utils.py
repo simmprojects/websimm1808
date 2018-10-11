@@ -182,7 +182,8 @@ def add_variant_to_order(order, variant, quantity, param_file, discounts=None, t
         line.work_dir = line.set_work_dir(line.id)
         line.param_file = line.set_param_file(param_file)
         line.result_file = line.set_result_file(line.id)
-        line.save(update_fields=['work_dir', 'param_file', 'result_file'])
+        line.source_file = line.set_source_file(variant.source_file)
+        line.save(update_fields=['work_dir', 'param_file', 'result_file', 'source_file'])
 
     if variant.track_inventory:
         allocate_stock(variant, quantity)

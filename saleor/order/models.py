@@ -26,7 +26,8 @@ from ..core.weight import WeightUnits, zero_weight
 from ..discount.models import Voucher
 from ..shipping.models import ShippingMethod
 
-import os, shutil
+import os, shutil, sys
+from django.conf import settings
 
 
 class OrderQueryset(models.QuerySet):
@@ -215,15 +216,16 @@ class OrderLine(models.Model):
     tax_rate = models.DecimalField(
         max_digits=5, decimal_places=2, default='0.0')
     work_dir = models.CharField(max_length=255, blank=True, null=True)
-    param_file = models.FileField(name='param_file', blank=True, null=True)
-    result_file = models.FileField(name='result_file', blank=True, null=True)
+    param_file = models.CharField(max_length=255, blank=True, null=True)
+    result_file = models.CharField(max_length=255, blank=True, null=True)
     upload_name = models.CharField(max_length=255, blank=True, null=True)
     download_name = models.CharField(max_length=255, blank=True, null=True, default='results.zip')
     status = models.CharField(
         max_length=32, default=JobStatus.DRAFT,
         choices=JobStatus.CHOICES)
     exe_name = models.CharField(max_length=255, default='exe.py')
-    work_base = models.CharField(max_length=255, blank=True, null=True)    
+    work_base = models.CharField(max_length=255, blank=True, null=True)
+    source_file = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.product_name
@@ -245,14 +247,29 @@ class OrderLine(models.Model):
         self.param_file = self.work_dir + self.upload_name
         #need to be altered accordingly
         try:
-            shutil.copy('/data/srcs/saleor/saleor-v2018.08/saleor'+param_f.url, self.param_file)
+            shutil.copy(settings.PROJECT_ROOT + param_f.url, self.param_file)
         except:
             pass
         return self.param_file
 
     def set_result_file(self, id):
-        self.result_file = '/media/saved_files/result_files/' + str(id) + '/' + self.download_name
-        return self.result_file    
+        #need to be altered accordingly
+        self.result_file = settings.MEDIA_ROOT + '/saved_files/result_files/' + str(id) + '/' + self.download_name
+        return self.result_file
+    
+    def set_source_file(self, source_f):
+        self.source_file = self.work_dir + source_f.split('/')[-1]
+        #need to be altered accordingly
+        try:
+            shutil.copy(source_f, self.source_file)
+            os.chdir(self.work_dir)
+            os.system('/usr/bin/unzip ' + self.source_file)
+        except:
+            pass
+        return self.source_file  
+    
+    def get_result_file_link(self):
+        return self.result_file.replace(settings.PROJECT_ROOT, '')
 
 
 class Fulfillment(models.Model):

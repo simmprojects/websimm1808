@@ -81,29 +81,27 @@
                 {% empty %}
                   {% trans "No attributes found." %}
                 {% endfor %}
-                <p class="card-title">{% trans "Needupload" %}</p>
+                <p class="card-title">{% trans "Job Settings" %}</p>
                 <div class="row attribute-select-or-create">
                     {{ form.is_need_upload|materializecss }}
-                </div>
-                <p class="card-title">{% trans "Needdownload" %}</p>
-                <div class="row attribute-select-or-create">
                     {{ form.is_need_download|materializecss }}
-                </div>
-                <p class="card-title">{% trans "Uploadchange" %}</p>
-                <div class="row attribute-select-or-create">
                     {{ form.is_upload_change|materializecss }}
-                    {{ form.upload_name|materializecss }}
-                </div>
-                <p class="card-title">{% trans "Downloadchange" %}</p>
-                <div class="row attribute-select-or-create">
                     {{ form.is_download_change|materializecss }}
-                    {{ form.download_name|materializecss }}
                 </div>
                 <div class="row attribute-select-or-create">
-                    {{ form.exe_name|materializecss }}
+                    {{ form.upload_name|materializecss:"input-field s8" }}
                 </div>
                 <div class="row attribute-select-or-create">
-                    {{ form.work_base|materializecss }}
+                    {{ form.download_name|materializecss:"input-field s8" }}
+                </div>
+                <div class="row attribute-select-or-create">
+                    {{ form.exe_name|materializecss:"input-field s8" }}
+                </div>
+                <div class="row attribute-select-or-create">
+                    {{ form.work_base|materializecss:"input-field s8" }}
+                </div>
+                <div class="row attribute-select-or-create">
+                    {{ form.source_file|materializecss:"input-field s8" }}
                 </div>
                 {% if variant.product.product_type.is_shipping_required %}
                   <p class="card-title">{% trans "Shipping" %}</p>
@@ -116,6 +114,9 @@
                 </div>
                 <div class="row">
                   {{ form.quantity|materializecss }}
+                </div>
+                <div class="row">
+                  {{ form.sim_instances|materializecss }}
                 </div>
                 <div class="row">
                   {{ form.price_override|materializecss }}

@@ -48,7 +48,7 @@
       <div class="col-md-3 text-center">
       <!-- this must be altered accordingly -->
       {% if line.status == 'done' %}
-        <a class="link--clean" href="{{ line.result_file }}">
+        <a class="link--clean" href="{{ line.get_result_file_link }}">
           {% trans "Result" context "Order details column title" %}
         </a>
       {% else %}
