@@ -44,13 +44,17 @@ export default observer(class VariantPicker extends Component {
     } else if (Object.keys(variant).length) {
       selection = variant.attributes;
     }
-    let disabledValue = this.matchVariantFromSelection(selection);
+    let disabledValues = this.matchVariantFromSelection(selection);
     this.state = {
       errors: {},
       quantity: 1,
       selection: selection,
-      param_file_disabled: disabledValue,
-      upload_file: null
+      typeSelection: "Upload File",
+      param_file_disabled: disabledValues[0],
+      draw_molecule_disabled: disabledValues[1],
+      upload_file: null,
+      draw_showed: false,
+      molecule_value: "No Molecule Input."
     };
   }
 
@@ -62,33 +66,38 @@ export default observer(class VariantPicker extends Component {
   handleAddToCart = () => {
     const { onAddToCartSuccess, onAddToCartError, store } = this.props;
     const { quantity, upload_file } = this.state;
-     if (quantity > 0 && !store.isEmpty) {
-      var formData = new FormData();
-      formData.append('quantity', quantity)
-      formData.append('variant', store.variant.id)
-      formData.append('upload_file', upload_file)
-      $.ajax({
-        url: this.props.url,
-        method: 'POST',
-        contentType: false,
-        processData: false,
-        data: formData,
-        success: () => {
-          onAddToCartSuccess();
-        },
-        error: (response) => {
-          onAddToCartError(response);
-        }
-      });
+      if (quantity > 0 && !store.isEmpty) {
+        var formData = new FormData();
+        formData.append('quantity', quantity)
+        formData.append('variant', store.variant.id)
+        formData.append('upload_file', upload_file)
+        let molecule = $('#id_molecule').val();
+        formData.append('molecule_value', molecule)
+
+        $.ajax({
+          url: this.props.url,
+          method: 'POST',
+          contentType: false,
+          processData: false,
+          data: formData,
+          success: () => {
+            onAddToCartSuccess();
+          },
+          error: (response) => {
+            onAddToCartError(response);
+          }
+        });
     }
   };
 
   handleAttributeChange = (attrId, valueId) => {
+    this.resetParameters();
+
     this.setState({
       selection: Object.assign({}, this.state.selection, { [attrId]: valueId })
     }, () => {
-      let disabledValue = this.matchVariantFromSelection(this.state.selection);
-      this.setState({ param_file_disabled: disabledValue })
+      let disabledValues = this.matchVariantFromSelection(this.state.selection);
+      this.setState({ param_file_disabled: disabledValues[0], draw_molecule_disabled: disabledValues[1] })
       let params = {};
       Object.keys(this.state.selection)
         .forEach(attrId => {
@@ -102,10 +111,25 @@ export default observer(class VariantPicker extends Component {
     });
   };
 
-  handleQuantityChange = (event) => {
-    this.setState({ quantity: parseInt(event.target.value) });
+  handleTypeChange = (value) => {
+    this.resetParameters();
+
+    this.setState({
+      typeSelection: value
+    }, () => {
+      if (value == "Draw Online") {
+        this.setState({ draw_showed: true })
+      }
+      else {
+        this.setState({ draw_showed: false })
+      }
+    });
   };
-  
+
+  handleDrawChange = () => {
+    window.open('draw_molecule','Draw Molecule','width=500,height=450,scrollbars=no,resizable=yes');
+  };
+
   handleFileChange = (event) => {
     const file = event.target.files[0];
     this.setState({ upload_file: file })
@@ -142,13 +166,31 @@ export default observer(class VariantPicker extends Component {
       }
     });
     store.setVariant(matchedVariant);
-    const disabledValue = !matchedVariant.needupload;
+    const disabledValue1 = !matchedVariant.needupload;
+    const disabledValue2 = !matchedVariant.draw;
+    return [disabledValue1, disabledValue2]
+  }
+
+  matchTypeFromSelection(selection) {
+    const { store, variants } = this.props;
+    let matchedVariant = null;
+    variants.forEach(variant => {
+      if (_.isEqual(selection, variant.attributes)) {
+        matchedVariant = variant;
+      }
+    });
+    const disabledValue = !matchedVariant.draw;
     return disabledValue
+  }
+
+  resetParameters(){
+    this.setState({ upload_file: null });
+    $('#id_molecule').text('');
   }
 
   render () {
     const { store, variantAttributes } = this.props;
-    const { errors, selection, quantity, param_file_disabled, upload_file } = this.state;
+    const { errors, selection, typeSelection, param_file_disabled, upload_file, draw_molecule_disabled, draw_showed, molecule_value } = this.state;
     const disableAddToCart = store.isEmpty || !this.checkVariantAvailability();
 
     const addToCartBtnClasses = classNames({
@@ -162,9 +204,15 @@ export default observer(class VariantPicker extends Component {
           errors={errors.upload_file}
           variantAttributes={variantAttributes}
           selection={selection}
+          typeSelection={typeSelection}
           handleAttributeChange={this.handleAttributeChange}
           param_file_disabled={param_file_disabled}
+          draw_molecule_disabled={draw_molecule_disabled}
           handleFileChange={this.handleFileChange}
+          handleTypeChange={this.handleTypeChange}
+          draw_showed={draw_showed}
+          handleDrawChange={this.handleDrawChange}
+          molecule_value={molecule_value}
         />
         <div className="clearfix">
           <div className="form-group">

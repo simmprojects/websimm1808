@@ -58,8 +58,13 @@ def handle_cart_form(request, product, create_cart=False):
     else:
         cart = get_cart_from_request(request)
     form = ProductForm(
-        cart=cart, product=product, data=request.POST or None,
-        discounts=request.discounts, taxes=request.taxes, upload_file=request.FILES.get('upload_file') or None)
+        cart=cart,
+        product=product,
+        data=request.POST or None,
+        discounts=request.discounts,
+        taxes=request.taxes,
+        upload_file=request.FILES.get('upload_file') or None,
+        molecule_value=request.POST.get('molecule_value'))
     return form, cart
 
 
@@ -116,9 +121,10 @@ def get_product_list_context(request, filter_set):
     from ..filters import SORT_BY_FIELDS
     products_paginated = get_paginator_items(
         filter_set.qs, settings.PAGINATE_BY, request.GET.get('page'))
-    products_and_availability = list(products_with_availability(
-        products_paginated, request.discounts, request.taxes,
-        request.currency))
+    products_and_availability = list(
+        products_with_availability(
+            products_paginated, request.discounts, request.taxes,
+            request.currency))
     now_sorted_by = get_now_sorted_by(filter_set)
     arg_sort_by = request.GET.get('sort_by')
     is_descending = arg_sort_by.startswith('-') if arg_sort_by else False

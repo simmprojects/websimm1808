@@ -35,7 +35,8 @@ def get_variant_picker_data(
             'priceUndiscounted': price_as_dict(price_undiscounted),
             'attributes': variant.attributes,
             'priceLocalCurrency': price_as_dict(price_local_currency),
-            'needupload': variant.is_need_upload,            
+            'needupload': variant.is_need_upload,
+            'draw': variant.is_draw,
             'schemaData': schema_data}
         data['variants'].append(variant_data)
 
@@ -48,25 +49,31 @@ def get_variant_picker_data(
 
         if available_variants:
             data['variantAttributes'].append({
-                'pk': attribute.pk,
-                'name': attribute.translated.name,
-                'slug': attribute.translated.slug,
-                'values': [
-                    {
-                        'pk': value.pk, 'name': value.translated.name,
-                        'slug': value.translated.slug}
-                    for value in attribute.values.filter(
-                        pk__in=available_variants).prefetch_related(
-                            'translations')]})
+                'pk':
+                attribute.pk,
+                'name':
+                attribute.translated.name,
+                'slug':
+                attribute.translated.slug,
+                'values': [{
+                    'pk': value.pk,
+                    'name': value.translated.name,
+                    'slug': value.translated.slug}
+                           for value in attribute.values.filter(
+                               pk__in=available_variants).prefetch_related(
+                                   'translations')]})
 
     data['availability'] = {
-        'discount': price_as_dict(availability.discount),
-        'taxRate': get_tax_rate_by_name(product.tax_rate, taxes),
-        'priceRange': price_range_as_dict(availability.price_range),
-        'priceRangeUndiscounted': price_range_as_dict(
-            availability.price_range_undiscounted),
-        'priceRangeLocalCurrency': price_range_as_dict(
-            availability.price_range_local_currency)}
+        'discount':
+        price_as_dict(availability.discount),
+        'taxRate':
+        get_tax_rate_by_name(product.tax_rate, taxes),
+        'priceRange':
+        price_range_as_dict(availability.price_range),
+        'priceRangeUndiscounted':
+        price_range_as_dict(availability.price_range_undiscounted),
+        'priceRangeLocalCurrency':
+        price_range_as_dict(availability.price_range_local_currency)}
     data['priceDisplay'] = {
         'displayGross': display_gross_prices(),
         'handleTaxes': bool(taxes)}

@@ -30,7 +30,8 @@ class CartQueryset(models.QuerySet):
             'lines__variant__translations',
             'lines__variant__product__translations',
             'lines__variant__product__images',
-            'lines__variant__product__product_type__product_attributes__values')  # noqa
+            'lines__variant__product__product_type__product_attributes__values'
+        )  # noqa
 
 
 class Cart(models.Model):
@@ -39,24 +40,38 @@ class Cart(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_change = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True, related_name='carts',
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        related_name='carts',
         on_delete=models.CASCADE)
     email = models.EmailField(blank=True, default='')
     token = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     quantity = models.PositiveIntegerField(default=0)
     billing_address = models.ForeignKey(
-        Address, related_name='+', editable=False, null=True,
+        Address,
+        related_name='+',
+        editable=False,
+        null=True,
         on_delete=models.SET_NULL)
     shipping_address = models.ForeignKey(
-        Address, related_name='+', editable=False, null=True,
+        Address,
+        related_name='+',
+        editable=False,
+        null=True,
         on_delete=models.SET_NULL)
     shipping_method = models.ForeignKey(
-        ShippingMethod, blank=True, null=True, related_name='carts',
+        ShippingMethod,
+        blank=True,
+        null=True,
+        related_name='carts',
         on_delete=models.SET_NULL)
     note = models.TextField(blank=True, default='')
     discount_amount = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES, default=0)
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        default=0)
     discount_name = models.CharField(max_length=255, blank=True, null=True)
     translated_discount_name = models.CharField(
         max_length=255, blank=True, null=True)
@@ -65,10 +80,10 @@ class Cart(models.Model):
     objects = CartQueryset.as_manager()
 
     class Meta:
-        ordering = ('-last_change',)
+        ordering = ('-last_change', )
 
     def __repr__(self):
-        return 'Cart(quantity=%s)' % (self.quantity,)
+        return 'Cart(quantity=%s)' % (self.quantity, )
 
     def __iter__(self):
         return iter(self.lines.all())
@@ -82,9 +97,8 @@ class Cart(models.Model):
 
     def get_shipping_price(self, taxes):
         return (
-            self.shipping_method.get_total_price(taxes)
-            if self.shipping_method and self.is_shipping_required()
-            else ZERO_TAXED_MONEY)
+            self.shipping_method.get_total_price(taxes) if self.shipping_method
+            and self.is_shipping_required() else ZERO_TAXED_MONEY)
 
     def get_subtotal(self, discounts=None, taxes=None):
         """Return the total cost of the cart prior to shipping."""
@@ -94,8 +108,8 @@ class Cart(models.Model):
     def get_total(self, discounts=None, taxes=None):
         """Return the total cost of the cart."""
         return (
-            self.get_subtotal(discounts, taxes)
-            + self.get_shipping_price(taxes) - self.discount_amount)
+            self.get_subtotal(discounts, taxes) +
+            self.get_shipping_price(taxes) - self.discount_amount)
 
     def get_total_weight(self):
         # Cannot use `sum` as it parses an empty Weight to an int
@@ -122,9 +136,12 @@ class CartLine(models.Model):
     variant = models.ForeignKey(
         'product.ProductVariant', related_name='+', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(999)])
+        validators=[MinValueValidator(0),
+                    MaxValueValidator(999)])
     data = JSONField(blank=True, default={})
-    param_file = models.FileField(upload_to='saved_files/param_files', blank=True, null=True)  
+    param_file = models.FileField(
+        upload_to='saved_files/param_files', blank=True, null=True)
+    molecule_value = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         unique_together = ('cart', 'variant', 'data')
@@ -144,7 +161,7 @@ class CartLine(models.Model):
 
     def __repr__(self):
         return 'CartLine(variant=%r, quantity=%r, param_file=%r)' % (
-            self.variant, self.quantity, self.param_file)    
+            self.variant, self.quantity, self.param_file)
 
     def __getstate__(self):
         return self.variant, self.quantity, self.param_file

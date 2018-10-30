@@ -60,7 +60,9 @@ def product_details(request, slug, product_id, form=None):
     if form is None:
         form = handle_cart_form(request, product, create_cart=False)[0]
     availability = get_availability(
-        product, discounts=request.discounts, taxes=request.taxes,
+        product,
+        discounts=request.discounts,
+        taxes=request.taxes,
         local_currency=request.currency)
     product_images = get_product_images(product)
     variant_picker_data = get_variant_picker_data(
@@ -70,17 +72,24 @@ def product_details(request, slug, product_id, form=None):
     show_variant_picker = all([v.attributes for v in product.variants.all()])
     json_ld_data = product_json_ld(product, product_attributes)
     ctx = {
-        'is_visible': is_visible,
-        'form': form,
-        'availability': availability,
-        'product': product,
-        'product_attributes': product_attributes,
-        'product_images': product_images,
-        'show_variant_picker': show_variant_picker,
-        'variant_picker_data': json.dumps(
-            variant_picker_data, default=serialize_decimal),
-        'json_ld_product_data': json.dumps(
-            json_ld_data, default=serialize_decimal)}
+        'is_visible':
+        is_visible,
+        'form':
+        form,
+        'availability':
+        availability,
+        'product':
+        product,
+        'product_attributes':
+        product_attributes,
+        'product_images':
+        product_images,
+        'show_variant_picker':
+        show_variant_picker,
+        'variant_picker_data':
+        json.dumps(variant_picker_data, default=serialize_decimal),
+        'json_ld_product_data':
+        json.dumps(json_ld_data, default=serialize_decimal)}
     return TemplateResponse(request, 'product/details.html', ctx)
 
 
@@ -88,9 +97,12 @@ def product_add_to_cart(request, slug, product_id):
     # types: (int, str, dict) -> None
 
     if not request.method == 'POST':
-        return redirect(reverse(
-            'product:details',
-            kwargs={'product_id': product_id, 'slug': slug}))
+        return redirect(
+            reverse(
+                'product:details',
+                kwargs={
+                    'product_id': product_id,
+                    'slug': slug}))
 
     products = products_for_cart(user=request.user)
     product = get_object_or_404(products, pk=product_id)
@@ -98,8 +110,9 @@ def product_add_to_cart(request, slug, product_id):
     if form.is_valid():
         form.save()
         if request.is_ajax():
-            response = JsonResponse(
-                {'next': reverse('cart:index')}, status=200)
+            response = JsonResponse({
+                'next': reverse('cart:index')},
+                                    status=200)
         else:
             response = redirect('cart:index')
     else:
@@ -112,12 +125,18 @@ def product_add_to_cart(request, slug, product_id):
     return response
 
 
+def product_draw_molecule(request, slug, product_id):
+    return TemplateResponse(request, 'product/jme_window.html')
+
+
 def category_index(request, slug, category_id):
     categories = Category.objects.prefetch_related('translations')
     category = get_object_or_404(categories, id=category_id)
     if slug != category.slug:
         return redirect(
-            'product:category', permanent=True, slug=category.slug,
+            'product:category',
+            permanent=True,
+            slug=category.slug,
             category_id=category_id)
     # Check for subcategories
     categories = category.get_descendants(include_self=True)
@@ -131,8 +150,8 @@ def category_index(request, slug, category_id):
 
 
 def collection_index(request, slug, pk):
-    collections = collections_visible_to_user(request.user).prefetch_related(
-        'translations')
+    collections = collections_visible_to_user(
+        request.user).prefetch_related('translations')
     collection = get_object_or_404(collections, id=pk)
     if collection.slug != slug:
         return HttpResponsePermanentRedirect(collection.get_absolute_url())

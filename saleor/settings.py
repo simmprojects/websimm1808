@@ -50,37 +50,26 @@ if REDIS_URL:
 CACHES = {'default': django_cache_url.config()}
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgres://simm:simm@localhost:5432/simm',
-        conn_max_age=600)}
-
+    'default':
+    dj_database_url.config(
+        default='postgres://simm:simm@localhost:5432/web', conn_max_age=600)}
 
 TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en'
-LANGUAGES = [
-    ('bg', _('Bulgarian')),
-    ('cs', _('Czech')),
-    ('de', _('German')),
-    ('en', _('English')),
-    ('es', _('Spanish')),
-    ('fa-ir', _('Persian (Iran)')),
-    ('fr', _('French')),
-    ('hu', _('Hungarian')),
-    ('it', _('Italian')),
-    ('ja', _('Japanese')),
-    ('ko', _('Korean')),
-    ('nb', _('Norwegian')),
-    ('nl', _('Dutch')),
-    ('pl', _('Polish')),
-    ('pt-br', _('Portuguese (Brazil)')),
-    ('ro', _('Romanian')),
-    ('ru', _('Russian')),
-    ('sk', _('Slovak')),
-    ('tr', _('Turkish')),
-    ('uk', _('Ukrainian')),
-    ('vi', _('Vietnamese')),
-    ('zh-hans', _('Chinese')),
-    ('zh-tw', _('Chinese (Taiwan)'))]
+LANGUAGES = [('bg', _('Bulgarian')), ('cs', _('Czech')), ('de', _('German')),
+             ('en',
+              _('English')), ('es',
+                              _('Spanish')), ('fa-ir', _('Persian (Iran)')),
+             ('fr', _('French')), ('hu', _('Hungarian')), ('it', _('Italian')),
+             ('ja', _('Japanese')), ('ko',
+                                     _('Korean')), ('nb', _('Norwegian')),
+             ('nl',
+              _('Dutch')), ('pl',
+                            _('Polish')), ('pt-br', _('Portuguese (Brazil)')),
+             ('ro', _('Romanian')), ('ru', _('Russian')), ('sk', _('Slovak')),
+             ('tr', _('Turkish')), ('uk',
+                                    _('Ukrainian')), ('vi', _('Vietnamese')),
+             ('zh-hans', _('Chinese')), ('zh-tw', _('Chinese (Taiwan)'))]
 LOCALE_PATHS = [os.path.join(PROJECT_ROOT, 'locale')]
 USE_I18N = True
 USE_L10N = True
@@ -174,14 +163,11 @@ MIDDLEWARE = [
     'django_babel.middleware.LocaleMiddleware',
     'saleor.core.middleware.discounts',
     'saleor.core.middleware.google_analytics',
-    'saleor.core.middleware.country',
-    'saleor.core.middleware.currency',
-    'saleor.core.middleware.site',
-    'saleor.core.middleware.taxes',
+    'saleor.core.middleware.country', 'saleor.core.middleware.currency',
+    'saleor.core.middleware.site', 'saleor.core.middleware.taxes',
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
-    'saleor.graphql.middleware.jwt_middleware'
-]
+    'saleor.graphql.middleware.jwt_middleware']
 
 INSTALLED_APPS = [
     # External apps that need to go before django's
@@ -236,13 +222,11 @@ INSTALLED_APPS = [
     'captcha']
 
 if DEBUG:
-    MIDDLEWARE.append(
-        'debug_toolbar.middleware.DebugToolbarMiddleware')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
     INSTALLED_APPS.append('debug_toolbar')
     DEBUG_TOOLBAR_PANELS = [
         # adds a request history to the debug toolbar
         'ddt_request_history.panels.request_history.RequestHistoryPanel',
-
         'debug_toolbar.panels.versions.VersionsPanel',
         'debug_toolbar.panels.timer.TimerPanel',
         'debug_toolbar.panels.settings.SettingsPanel',
@@ -255,10 +239,8 @@ if DEBUG:
         'debug_toolbar.panels.signals.SignalsPanel',
         'debug_toolbar.panels.logging.LoggingPanel',
         'debug_toolbar.panels.redirects.RedirectsPanel',
-        'debug_toolbar.panels.profiling.ProfilingPanel',
-    ]
-    DEBUG_TOOLBAR_CONFIG = {
-        'RESULTS_STORE_SIZE': 100}
+        'debug_toolbar.panels.profiling.ProfilingPanel', ]
+    DEBUG_TOOLBAR_CONFIG = {'RESULTS_STORE_SIZE': 100}
 
 #ENABLE_SILK = get_bool_from_env('ENABLE_SILK', False)
 ENABLE_SILK = True
@@ -314,7 +296,8 @@ DEFAULT_CURRENCY = os.environ.get('DEFAULT_CURRENCY', 'USD')
 DEFAULT_DECIMAL_PLACES = get_currency_fraction(DEFAULT_CURRENCY)
 AVAILABLE_CURRENCIES = [DEFAULT_CURRENCY]
 COUNTRIES_OVERRIDE = {
-    'EU': pgettext_lazy(
+    'EU':
+    pgettext_lazy(
         'Name of political and economical union of european countries',
         'European Union')}
 
@@ -340,8 +323,7 @@ PAYMENT_HOST = get_host
 
 PAYMENT_MODEL = 'order.Payment'
 
-PAYMENT_VARIANTS = {
-    'default': ('payments.dummy.DummyProvider', {})}
+PAYMENT_VARIANTS = {'default': ('payments.dummy.DummyProvider', {})}
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
@@ -350,11 +332,9 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 if not CACHES['default']['BACKEND'].endswith('LocMemCache'):
     SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
-CHECKOUT_PAYMENT_CHOICES = [
-    ('default', 'Dummy provider')]
+CHECKOUT_PAYMENT_CHOICES = [('default', 'Dummy provider')]
 
-MESSAGE_TAGS = {
-    messages.ERROR: 'danger'}
+MESSAGE_TAGS = {messages.ERROR: 'danger'}
 
 LOW_STOCK_THRESHOLD = 10
 MAX_CART_LINE_QUANTITY = int(os.environ.get('MAX_CART_LINE_QUANTITY', 50))
@@ -397,19 +377,16 @@ if AWS_MEDIA_BUCKET_NAME:
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 VERSATILEIMAGEFIELD_RENDITION_KEY_SETS = {
-    'products': [
-        ('product_gallery', 'crop__540x540'),
-        ('product_gallery_2x', 'crop__1080x1080'),
-        ('product_small', 'crop__60x60'),
-        ('product_small_2x', 'crop__120x120'),
-        ('product_list', 'crop__255x255'),
-        ('product_list_2x', 'crop__510x510')]}
+    'products':
+    [('product_gallery',
+      'crop__540x540'), ('product_gallery_2x', 'crop__1080x1080'),
+     ('product_small', 'crop__60x60'), ('product_small_2x', 'crop__120x120'),
+     ('product_list', 'crop__255x255'), ('product_list_2x', 'crop__510x510')]}
 
 VERSATILEIMAGEFIELD_SETTINGS = {
     # Images should be pre-generated on Production environment
     'create_images_on_demand': get_bool_from_env(
-        'CREATE_IMAGES_ON_DEMAND', DEBUG),
-}
+        'CREATE_IMAGES_ON_DEMAND', DEBUG), }
 
 PLACEHOLDER_IMAGES = {
     60: 'images/placeholder60x60.png',
@@ -426,10 +403,7 @@ WEBPACK_LOADER = {
         'BUNDLE_DIR_NAME': 'assets/',
         'STATS_FILE': os.path.join(PROJECT_ROOT, 'webpack-bundle.json'),
         'POLL_INTERVAL': 0.1,
-        'IGNORE': [
-            r'.+\.hot-update\.js',
-            r'.+\.map']}}
-
+        'IGNORE': [r'.+\.hot-update\.js', r'.+\.map']}}
 
 LOGOUT_ON_PASSWORD_CHANGE = False
 
@@ -437,8 +411,9 @@ LOGOUT_ON_PASSWORD_CHANGE = False
 DB_SEARCH_ENABLED = True
 
 # support deployment-dependant elastic enviroment variable
-ES_URL = (os.environ.get('ELASTICSEARCH_URL') or
-          os.environ.get('SEARCHBOX_URL') or os.environ.get('BONSAI_URL'))
+ES_URL = (
+    os.environ.get('ELASTICSEARCH_URL') or os.environ.get('SEARCHBOX_URL')
+    or os.environ.get('BONSAI_URL'))
 
 ENABLE_SEARCH = bool(ES_URL) or DB_SEARCH_ENABLED  # global search disabling
 
@@ -447,9 +422,7 @@ SEARCH_BACKEND = 'saleor.search.backends.postgresql'
 if ES_URL:
     SEARCH_BACKEND = 'saleor.search.backends.elasticsearch'
     INSTALLED_APPS.append('django_elasticsearch_dsl')
-    ELASTICSEARCH_DSL = {
-        'default': {
-            'hosts': ES_URL}}
+    ELASTICSEARCH_DSL = {'default': {'hosts': ES_URL}}
 
 AUTHENTICATION_BACKENDS = [
     'saleor.account.backends.facebook.CustomFacebookOAuth2',
@@ -471,8 +444,7 @@ SOCIAL_AUTH_PIPELINE = [
 SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
 SOCIAL_AUTH_USER_MODEL = AUTH_USER_MODEL
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-    'fields': 'id, email'}
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, email'}
 # As per March 2018, Facebook requires all traffic to go through HTTPS only
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
@@ -488,38 +460,23 @@ CELERY_RESULT_BACKEND = 'django-db'
 # Impersonate module settings
 IMPERSONATE = {
     'URI_EXCLUSIONS': [r'^dashboard/'],
-    'CUSTOM_USER_QUERYSET': 'saleor.account.impersonate.get_impersonatable_users',  # noqa
+    'CUSTOM_USER_QUERYSET':
+    'saleor.account.impersonate.get_impersonatable_users',  # noqa
     'USE_HTTP_REFERER': True,
     'CUSTOM_ALLOW': 'saleor.account.impersonate.can_impersonate'}
 
-
 # Rich-text editor
 ALLOWED_TAGS = [
-    'a',
-    'b',
-    'blockquote',
-    'br',
-    'em',
-    'h2',
-    'h3',
-    'i',
-    'img',
-    'li',
-    'ol',
-    'p',
-    'strong',
-    'ul']
+    'a', 'b', 'blockquote', 'br', 'em', 'h2', 'h3', 'i', 'img', 'li', 'ol',
+    'p', 'strong', 'ul']
 ALLOWED_ATTRIBUTES = {
     '*': ['align', 'style'],
     'a': ['href', 'title'],
     'img': ['src']}
 ALLOWED_STYLES = ['text-align']
 
-
 # Slugs for menus precreated in Django migrations
-DEFAULT_MENUS = {
-    'top_menu_name': 'navbar',
-    'bottom_menu_name': 'footer'}
+DEFAULT_MENUS = {'top_menu_name': 'navbar', 'bottom_menu_name': 'footer'}
 
 # This enable the new 'No Captcha reCaptcha' version (the simple checkbox)
 # instead of the old (deprecated) one. For more information see:
@@ -530,15 +487,10 @@ NOCAPTCHA = True
 RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
 
-
 #  Sentry
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 if SENTRY_DSN:
     INSTALLED_APPS.append('raven.contrib.django.raven_compat')
-    RAVEN_CONFIG = {
-        'dsn': SENTRY_DSN,
-        'release': __version__}
+    RAVEN_CONFIG = {'dsn': SENTRY_DSN, 'release': __version__}
 
-
-SERIALIZATION_MODULES = {
-    'json': 'saleor.core.utils.json_serializer'}
+SERIALIZATION_MODULES = {'json': 'saleor.core.utils.json_serializer'}

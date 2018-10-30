@@ -46,71 +46,97 @@ class OrderQueryset(models.QuerySet):
 
 
 class Order(models.Model):
-    created = models.DateTimeField(
-        default=now, editable=False)
+    created = models.DateTimeField(default=now, editable=False)
     status = models.CharField(
-        max_length=32, default=OrderStatus.UNFULFILLED,
+        max_length=32,
+        default=OrderStatus.UNFULFILLED,
         choices=OrderStatus.CHOICES)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True, related_name='orders',
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        related_name='orders',
         on_delete=models.SET_NULL)
     language_code = models.CharField(
         max_length=35, default=settings.LANGUAGE_CODE)
     tracking_client_id = models.CharField(
         max_length=36, blank=True, editable=False)
     billing_address = models.ForeignKey(
-        Address, related_name='+', editable=False, null=True,
+        Address,
+        related_name='+',
+        editable=False,
+        null=True,
         on_delete=models.SET_NULL)
     shipping_address = models.ForeignKey(
-        Address, related_name='+', editable=False, null=True,
+        Address,
+        related_name='+',
+        editable=False,
+        null=True,
         on_delete=models.SET_NULL)
     user_email = models.EmailField(blank=True, default='')
     shipping_method = models.ForeignKey(
-        ShippingMethod, blank=True, null=True, related_name='orders',
+        ShippingMethod,
+        blank=True,
+        null=True,
+        related_name='orders',
         on_delete=models.SET_NULL)
     shipping_price_net = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES,
-        default=0, editable=False)
+        default=0,
+        editable=False)
     shipping_price_gross = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES,
-        default=0, editable=False)
+        default=0,
+        editable=False)
     shipping_price = TaxedMoneyField(
         net_field='shipping_price_net', gross_field='shipping_price_gross')
     shipping_method_name = models.CharField(
         max_length=255, null=True, default=None, blank=True, editable=False)
     token = models.CharField(max_length=36, unique=True, blank=True)
     total_net = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES, default=0)
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        default=0)
     total_gross = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES, default=0)
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        default=0)
     total = TaxedMoneyField(net_field='total_net', gross_field='total_gross')
     voucher = models.ForeignKey(
-        Voucher, blank=True, null=True, related_name='+',
+        Voucher,
+        blank=True,
+        null=True,
+        related_name='+',
         on_delete=models.SET_NULL)
     discount_amount = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES, default=0)
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        default=0)
     discount_name = models.CharField(max_length=255, default='', blank=True)
     translated_discount_name = models.CharField(
         max_length=255, default='', blank=True)
     display_gross_prices = models.BooleanField(default=True)
     customer_note = models.TextField(blank=True, default='')
     weight = MeasurementField(
-        measurement=Weight, unit_choices=WeightUnits.CHOICES,
+        measurement=Weight,
+        unit_choices=WeightUnits.CHOICES,
         default=zero_weight)
     quantity = models.IntegerField(default=0)
-    
+
     objects = OrderQueryset.as_manager()
 
     class Meta:
-        ordering = ('-pk',)
+        ordering = ('-pk', )
         permissions = ((
             'manage_orders',
-            pgettext_lazy('Permission description', 'Manage orders.')),)
+            pgettext_lazy('Permission description', 'Manage orders.')), )
 
     def save(self, *args, **kwargs):
         if not self.token:
@@ -118,11 +144,10 @@ class Order(models.Model):
         return super().save(*args, **kwargs)
 
     def is_fully_paid(self):
-        total_paid = sum(
-            [
-                payment.get_total_price() for payment in
-                self.payments.filter(status=PaymentStatus.CONFIRMED)],
-            ZERO_TAXED_MONEY)
+        total_paid = sum([
+            payment.get_total_price() for payment in self.payments.filter(
+                status=PaymentStatus.CONFIRMED)],
+                         ZERO_TAXED_MONEY)
         return total_paid.gross >= self.total.gross
 
     def get_user_current_email(self):
@@ -138,10 +163,10 @@ class Order(models.Model):
         return iter(self.lines.all())
 
     def __repr__(self):
-        return '<Order #%r>' % (self.id,)
+        return '<Order #%r>' % (self.id, )
 
     def __str__(self):
-        return '#%d' % (self.id,)
+        return '#%d' % (self.id, )
 
     def get_absolute_url(self):
         return reverse('order:details', kwargs={'token': self.token})
@@ -194,22 +219,29 @@ class OrderLine(models.Model):
     order = models.ForeignKey(
         Order, related_name='lines', editable=False, on_delete=models.CASCADE)
     variant = models.ForeignKey(
-        'product.ProductVariant', related_name='+', on_delete=models.SET_NULL,
-        blank=True, null=True)
+        'product.ProductVariant',
+        related_name='+',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True)
     # max_length is as produced by ProductVariant's display_product method
     product_name = models.CharField(max_length=386)
     translated_product_name = models.CharField(max_length=386, default='')
     product_sku = models.CharField(max_length=32)
     is_shipping_required = models.BooleanField()
     quantity = models.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(999)])
+        validators=[MinValueValidator(0),
+                    MaxValueValidator(999)])
     quantity_fulfilled = models.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(999)], default=0)
+        validators=[MinValueValidator(0),
+                    MaxValueValidator(999)], default=0)
     unit_price_net = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES)
     unit_price_gross = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES)
     unit_price = TaxedMoneyField(
         net_field='unit_price_net', gross_field='unit_price_gross')
@@ -219,11 +251,11 @@ class OrderLine(models.Model):
     param_file = models.CharField(max_length=255, blank=True, null=True)
     result_file = models.CharField(max_length=255, blank=True, null=True)
     upload_name = models.CharField(max_length=255, blank=True, null=True)
-    download_name = models.CharField(max_length=255, blank=True, null=True, default='results.zip')
+    download_name = models.CharField(
+        max_length=255, blank=True, null=True, default='results.zip')
     status = models.CharField(
-        max_length=32, default=JobStatus.DRAFT,
-        choices=JobStatus.CHOICES)
-    exe_name = models.CharField(max_length=255, default='exe.py')
+        max_length=32, default=JobStatus.DRAFT, choices=JobStatus.CHOICES)
+    exe_name = models.CharField(max_length=255, default='exe.sh')
     work_base = models.CharField(max_length=255, blank=True, null=True)
     source_file = models.CharField(max_length=255, blank=True, null=True)
 
@@ -236,13 +268,13 @@ class OrderLine(models.Model):
     @property
     def quantity_unfulfilled(self):
         return self.quantity - self.quantity_fulfilled
-    
+
     def set_work_dir(self, id):
         now_time = now().strftime("%Y-%m-%d")
         self.work_dir = self.work_base + str(id) + '/' + now_time + '/'
         os.makedirs(self.work_dir)
         return self.work_dir
-    
+
     def set_param_file(self, param_f):
         self.param_file = self.work_dir + self.upload_name
         #need to be altered accordingly
@@ -254,20 +286,21 @@ class OrderLine(models.Model):
 
     def set_result_file(self, id):
         #need to be altered accordingly
-        self.result_file = settings.MEDIA_ROOT + '/saved_files/result_files/' + str(id) + '/' + self.download_name
+        self.result_file = settings.MEDIA_ROOT + '/saved_files/result_files/' + str(
+            id) + '/' + self.download_name
         return self.result_file
-    
+
     def set_source_file(self, source_f):
         self.source_file = self.work_dir + source_f.split('/')[-1]
         #need to be altered accordingly
         try:
             shutil.copy(source_f, self.source_file)
             os.chdir(self.work_dir)
-            os.system('/usr/bin/unzip ' + self.source_file)
+            os.system('/usr/bin/unzip -q ' + self.source_file)
         except:
             pass
-        return self.source_file  
-    
+        return self.source_file
+
     def get_result_file_link(self):
         return self.result_file.replace(settings.PROJECT_ROOT, '')
 
@@ -275,17 +308,20 @@ class OrderLine(models.Model):
 class Fulfillment(models.Model):
     fulfillment_order = models.PositiveIntegerField(editable=False)
     order = models.ForeignKey(
-        Order, related_name='fulfillments', editable=False,
+        Order,
+        related_name='fulfillments',
+        editable=False,
         on_delete=models.CASCADE)
     status = models.CharField(
-        max_length=32, default=FulfillmentStatus.FULFILLED,
+        max_length=32,
+        default=FulfillmentStatus.FULFILLED,
         choices=FulfillmentStatus.CHOICES)
     tracking_number = models.CharField(max_length=255, default='', blank=True)
     shipping_date = models.DateTimeField(default=now, editable=False)
 
     def __str__(self):
-        return pgettext_lazy(
-            'Fulfillment str', 'Fulfillment #%s') % (self.composed_id,)
+        return pgettext_lazy('Fulfillment str',
+                             'Fulfillment #%s') % (self.composed_id, )
 
     def __iter__(self):
         return iter(self.lines.all())
@@ -317,7 +353,8 @@ class FulfillmentLine(models.Model):
     fulfillment = models.ForeignKey(
         Fulfillment, related_name='lines', on_delete=models.CASCADE)
     quantity = models.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(999)])
+        validators=[MinValueValidator(0),
+                    MaxValueValidator(999)])
 
 
 class Payment(BasePayment):
@@ -325,7 +362,7 @@ class Payment(BasePayment):
         Order, related_name='payments', on_delete=models.PROTECT)
 
     class Meta:
-        ordering = ('-pk',)
+        ordering = ('-pk', )
 
     def get_failure_url(self):
         return build_absolute_uri(
@@ -339,11 +376,11 @@ class Payment(BasePayment):
     def get_purchased_items(self):
         lines = [
             PurchasedItem(
-                name=line.product_name, sku=line.product_sku,
+                name=line.product_name,
+                sku=line.product_sku,
                 quantity=line.quantity,
                 price=line.unit_price_net.quantize(Decimal('0.01')).amount,
-                currency=line.unit_price.currency)
-            for line in self.order]
+                currency=line.unit_price.currency) for line in self.order]
 
         voucher = self.order.voucher
         if voucher is not None:
@@ -371,7 +408,9 @@ class OrderHistoryEntry(models.Model):
         Order, related_name='history', on_delete=models.CASCADE)
     content = models.TextField()
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True,
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
         on_delete=models.SET_NULL)
 
     class Meta:

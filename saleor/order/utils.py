@@ -148,7 +148,8 @@ def attach_order_to_user(order, user):
     order.save(update_fields=['user'])
 
 
-def add_variant_to_order(order, variant, quantity, param_file, discounts=None, taxes=None):
+def add_variant_to_order(
+        order, variant, quantity, param_file, discounts=None, taxes=None):
     """Add total_quantity of variant to order.
 
     Raises InsufficientStock exception if quantity could not be fulfilled.
@@ -183,7 +184,9 @@ def add_variant_to_order(order, variant, quantity, param_file, discounts=None, t
         line.param_file = line.set_param_file(param_file)
         line.result_file = line.set_result_file(line.id)
         line.source_file = line.set_source_file(variant.source_file)
-        line.save(update_fields=['work_dir', 'param_file', 'result_file', 'source_file'])
+        line.save(
+            update_fields=[
+                'work_dir', 'param_file', 'result_file', 'source_file'])
 
     if variant.track_inventory:
         allocate_stock(variant, quantity)

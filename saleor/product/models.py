@@ -35,7 +35,10 @@ class Category(MPTTModel, SeoModel):
     slug = models.SlugField(max_length=128)
     description = models.TextField(blank=True)
     parent = models.ForeignKey(
-        'self', null=True, blank=True, related_name='children',
+        'self',
+        null=True,
+        blank=True,
+        related_name='children',
         on_delete=models.CASCADE)
     background_image = VersatileImageField(
         upload_to='category-backgrounds', blank=True, null=True)
@@ -50,7 +53,9 @@ class Category(MPTTModel, SeoModel):
     def get_absolute_url(self):
         return reverse(
             'product:category',
-            kwargs={'slug': self.slug, 'category_id': self.id})
+            kwargs={
+                'slug': self.slug,
+                'category_id': self.id})
 
 
 class CategoryTranslation(SeoModelTranslation):
@@ -61,7 +66,7 @@ class CategoryTranslation(SeoModelTranslation):
     description = models.TextField(blank=True)
 
     class Meta:
-        unique_together = (('language_code', 'category'),)
+        unique_together = (('language_code', 'category'), )
 
     def __str__(self):
         return self.name
@@ -81,10 +86,13 @@ class ProductType(models.Model):
         'ProductAttribute', related_name='product_variant_types', blank=True)
     is_shipping_required = models.BooleanField(default=False)
     tax_rate = models.CharField(
-        max_length=128, default=DEFAULT_TAX_RATE_NAME, blank=True,
+        max_length=128,
+        default=DEFAULT_TAX_RATE_NAME,
+        blank=True,
         choices=TaxRateType.CHOICES)
     weight = MeasurementField(
-        measurement=Weight, unit_choices=WeightUnits.CHOICES,
+        measurement=Weight,
+        unit_choices=WeightUnits.CHOICES,
         default=zero_weight)
 
     class Meta:
@@ -115,7 +123,8 @@ class Product(SeoModel):
     category = models.ForeignKey(
         Category, related_name='products', on_delete=models.CASCADE)
     price = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES)
     available_on = models.DateField(blank=True, null=True)
     is_published = models.BooleanField(default=True)
@@ -125,8 +134,10 @@ class Product(SeoModel):
     tax_rate = models.CharField(
         max_length=128, default=DEFAULT_TAX_RATE_NAME, blank=True)
     weight = MeasurementField(
-        measurement=Weight, unit_choices=WeightUnits.CHOICES,
-        blank=True, null=True)
+        measurement=Weight,
+        unit_choices=WeightUnits.CHOICES,
+        blank=True,
+        null=True)
 
     objects = ProductQuerySet.as_manager()
     translated = TranslationProxy()
@@ -134,9 +145,8 @@ class Product(SeoModel):
     class Meta:
         app_label = 'product'
         permissions = ((
-            'manage_products', pgettext_lazy(
-                'Permission description',
-                'Manage products.')),)
+            'manage_products',
+            pgettext_lazy('Permission description', 'Manage products.')), )
 
     def __iter__(self):
         if not hasattr(self, '__variants'):
@@ -154,7 +164,9 @@ class Product(SeoModel):
     def get_absolute_url(self):
         return reverse(
             'product:details',
-            kwargs={'slug': self.get_slug(), 'product_id': self.id})
+            kwargs={
+                'slug': self.get_slug(),
+                'product_id': self.id})
 
     def get_slug(self):
         return slugify(smart_text(unidecode(self.name)))
@@ -192,7 +204,7 @@ class ProductTranslation(SeoModelTranslation):
     description = models.TextField()
 
     class Meta:
-        unique_together = (('language_code', 'product'),)
+        unique_together = (('language_code', 'product'), )
 
     def __str__(self):
         return self.name
@@ -207,8 +219,11 @@ class ProductVariant(models.Model):
     sku = models.CharField(max_length=32, unique=True)
     name = models.CharField(max_length=255, blank=True)
     price_override = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES, blank=True, null=True)
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        blank=True,
+        null=True)
     product = models.ForeignKey(
         Product, related_name='variants', on_delete=models.CASCADE)
     attributes = HStoreField(default={}, blank=True)
@@ -219,11 +234,16 @@ class ProductVariant(models.Model):
     quantity_allocated = models.IntegerField(
         validators=[MinValueValidator(0)], default=Decimal(0))
     cost_price = MoneyField(
-        currency=settings.DEFAULT_CURRENCY, max_digits=12,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES, blank=True, null=True)
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=12,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        blank=True,
+        null=True)
     weight = MeasurementField(
-        measurement=Weight, unit_choices=WeightUnits.CHOICES,
-        blank=True, null=True)
+        measurement=Weight,
+        unit_choices=WeightUnits.CHOICES,
+        blank=True,
+        null=True)
     translated = TranslationProxy()
     is_need_upload = models.BooleanField(default=True)
     is_need_download = models.BooleanField(default=True)
@@ -234,12 +254,13 @@ class ProductVariant(models.Model):
     exe_name = models.CharField(max_length=255, default='exe.py')
     work_base = models.CharField(max_length=255, blank=True, null=True)
     #is_env_conda = models.BooleanField(default=False)
-    #is_env_virtualenv = models.BooleanField(default=False) 
+    #is_env_virtualenv = models.BooleanField(default=False)
     sim_instances = models.IntegerField(
         validators=[MinValueValidator(0)], default=Decimal(1))
     run_instances = models.IntegerField(
         validators=[MinValueValidator(0)], default=Decimal(0))
     source_file = models.CharField(max_length=255, blank=True, null=True)
+    is_draw = models.BooleanField(default=True)
 
     class Meta:
         app_label = 'product'
@@ -273,14 +294,16 @@ class ProductVariant(models.Model):
 
     def get_weight(self):
         return (
-            self.weight or self.product.weight or
-            self.product.product_type.weight)
+            self.weight or self.product.weight
+            or self.product.product_type.weight)
 
     def get_absolute_url(self):
         slug = self.product.get_slug()
         product_id = self.product.id
-        return reverse('product:details',
-                       kwargs={'slug': slug, 'product_id': product_id})
+        return reverse(
+            'product:details', kwargs={
+                'slug': slug,
+                'product_id': product_id})
 
     def is_shipping_required(self):
         return self.product.product_type.is_shipping_required
@@ -321,7 +344,7 @@ class ProductVariantTranslation(models.Model):
     translated = TranslationProxy()
 
     class Meta:
-        unique_together = (('language_code', 'product_variant'),)
+        unique_together = (('language_code', 'product_variant'), )
 
     def __repr__(self):
         class_ = type(self)
@@ -354,12 +377,13 @@ class ProductAttribute(models.Model):
 class ProductAttributeTranslation(models.Model):
     language_code = models.CharField(max_length=10)
     product_attribute = models.ForeignKey(
-        ProductAttribute, related_name='translations',
+        ProductAttribute,
+        related_name='translations',
         on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
     class Meta:
-        unique_together = (('language_code', 'product_attribute'),)
+        unique_together = (('language_code', 'product_attribute'), )
 
     def __repr__(self):
         class_ = type(self)
@@ -379,7 +403,7 @@ class AttributeChoiceValue(SortableModel):
     translated = TranslationProxy()
 
     class Meta:
-        ordering = ('sort_order',)
+        ordering = ('sort_order', )
         unique_together = ('name', 'attribute')
 
     def __str__(self):
@@ -392,12 +416,13 @@ class AttributeChoiceValue(SortableModel):
 class AttributeChoiceValueTranslation(models.Model):
     language_code = models.CharField(max_length=10)
     attribute_choice_value = models.ForeignKey(
-        AttributeChoiceValue, related_name='translations',
+        AttributeChoiceValue,
+        related_name='translations',
         on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
     class Meta:
-        unique_together = (('language_code', 'attribute_choice_value'),)
+        unique_together = (('language_code', 'attribute_choice_value'), )
 
     def __repr__(self):
         class_ = type(self)
@@ -427,7 +452,8 @@ class ProductImage(SortableModel):
 
 class VariantImage(models.Model):
     variant = models.ForeignKey(
-        'ProductVariant', related_name='variant_images',
+        'ProductVariant',
+        related_name='variant_images',
         on_delete=models.CASCADE)
     image = models.ForeignKey(
         ProductImage, related_name='variant_images', on_delete=models.CASCADE)
@@ -458,19 +484,19 @@ class Collection(SeoModel):
 
     def get_absolute_url(self):
         return reverse(
-            'product:collection',
-            kwargs={'pk': self.id, 'slug': self.slug})
+            'product:collection', kwargs={
+                'pk': self.id,
+                'slug': self.slug})
 
 
 class CollectionTranslation(SeoModelTranslation):
     language_code = models.CharField(max_length=10)
     collection = models.ForeignKey(
-        Collection, related_name='translations',
-        on_delete=models.CASCADE)
+        Collection, related_name='translations', on_delete=models.CASCADE)
     name = models.CharField(max_length=128)
 
     class Meta:
-        unique_together = (('language_code', 'collection'),)
+        unique_together = (('language_code', 'collection'), )
 
     def __repr__(self):
         class_ = type(self)

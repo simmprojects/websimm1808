@@ -1,0 +1,33 @@
+<html>
+<head>
+    <title>Molecular Editor</title>
+
+    {% load static %}
+    <script src="{% static 'assets/jsme/jsme.nocache.js' %}"></script>
+
+    <script language="JavaScript">function doneDrawn() {
+            var smiles = document.JME.smiles();
+            var jme = document.JME.jmeFile();
+            if (smiles == "") {
+                alert("Nothing input");
+            }
+            else {
+                opener.document.getElementById('id_molecule').value = smiles;
+                window.close();
+            }
+        }
+    </script>
+</head>
+<body bgcolor="#ffffff">
+    <center>
+        <div code="JME.class" name="JME" archive="JME.jar" width="90%" height="85%">You have to enable Java and
+            JavaScritpt
+            on your
+            machine !</div>
+        <form name="form_editor">
+            <input type="button" value=" Done " onClick="doneDrawn()"> &nbsp;&nbsp; <input type="button" value="  Close  "
+                onClick="window.close()">
+        </form>
+    </center>
+</body>
+</html>
