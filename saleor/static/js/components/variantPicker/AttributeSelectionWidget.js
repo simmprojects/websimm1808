@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 export default class AttributeSelectionWidget extends Component {
-
+  
   static propTypes = {
     errors: PropTypes.array,
     variantAttributes: PropTypes.object.isRequired,
@@ -15,7 +15,8 @@ export default class AttributeSelectionWidget extends Component {
     draw_showed: PropTypes.bool.isRequired,
     handleFileChange: PropTypes.func.isRequired,
     handleTypeChange: PropTypes.func.isRequired,
-    handleDrawChange: PropTypes.func.isRequired
+    handleDrawChange: PropTypes.func.isRequired,
+    handleParameterErrors: PropTypes.func.isRequired
   };
 
   handleChange = (attrPk, valuePk) => {
@@ -25,9 +26,31 @@ export default class AttributeSelectionWidget extends Component {
   handleChangeType = (value) => {
     this.props.handleTypeChange(value);
   }
+  
+  handleChangeFileType = (event) =>{
+    try{
+      let type = event.target.files[0].type;
+    }
+    catch(e){
+      return false;
+    }
+    let type = event.target.files[0].type;
+    let allowedTypes = event.target.accept.split(", ");
+    let typeAllowed = false;
+    let error_type = 0;
+    console.log(type);
+    allowedTypes.map((item)=>{
+      if(type == item){
+        typeAllowed = true;
+        error_type = 1;
+      }
+    })
+    this.props.handleFileChange(event, typeAllowed);
+    this.props.handleParameterErrors(error_type);
+  }
 
   render() {
-    const { errors, variantAttributes, selection, typeSelection, param_file_disabled, draw_molecule_disabled, draw_showed, molecule_value } = this.props;
+    const { errors, variantAttributes, selection, typeSelection, param_file_disabled, draw_molecule_disabled, draw_showed, molecule_value, upload_file } = this.props;
 
     return (
       <div className="variant-picker">
@@ -74,9 +97,9 @@ export default class AttributeSelectionWidget extends Component {
                   <input
                     id="id_param_file"
                     type="file"
-                    accept="text/csv, aplication/zip, text/plain"
+                    accept="text/csv, application/zip, application/x-zip-compressed, text/plain"
                     disabled={param_file_disabled}
-                    onChange={this.props.handleFileChange}
+                    onChange={this.handleChangeFileType}
                   />
                 )
                 :
@@ -120,9 +143,9 @@ export default class AttributeSelectionWidget extends Component {
                         <input
                           id="id_param_file"
                           type="file"
-                          accept="text/csv, aplication/zip, text/plain"
+                          accept="text/csv, application/zip, application/x-zip-compressed, text/plain"
                           disabled={param_file_disabled}
-                          onChange={this.props.handleFileChange}
+                          onChange={this.handleChangeFileType}
                         />
                       )
                     }
@@ -132,9 +155,6 @@ export default class AttributeSelectionWidget extends Component {
             </div>
           )
         }
-        {errors && (
-          <span className="help-block">{errors.join(' ')}</span>
-        )}
       </div>
     );
   }

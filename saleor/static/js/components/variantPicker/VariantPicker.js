@@ -54,6 +54,7 @@ export default observer(class VariantPicker extends Component {
       draw_molecule_disabled: disabledValues[1],
       upload_file: null,
       draw_showed: false,
+      style: "",
       molecule_value: "No Molecule Input."
     };
   }
@@ -65,8 +66,13 @@ export default observer(class VariantPicker extends Component {
 
   handleAddToCart = () => {
     const { onAddToCartSuccess, onAddToCartError, store } = this.props;
-    const { quantity, upload_file } = this.state;
-      if (quantity > 0 && !store.isEmpty) {
+    const { quantity, upload_file, molecule_value } = this.state;
+      let molecule = $('#id_molecule').val();
+      var flag = false;
+      if((typeof(molecule) != "undefined" && molecule != "No Molecule Input.") || upload_file != null){
+        flag = true;
+      }
+      if (quantity > 0 && !store.isEmpty && flag) {
         var formData = new FormData();
         formData.append('quantity', quantity)
         formData.append('variant', store.variant.id)
@@ -87,7 +93,10 @@ export default observer(class VariantPicker extends Component {
             onAddToCartError(response);
           }
         });
-    }
+      }
+      else{
+        this.handleParameterErrors(-1);
+      }
   };
 
   handleAttributeChange = (attrId, valueId) => {
@@ -127,12 +136,31 @@ export default observer(class VariantPicker extends Component {
   };
 
   handleDrawChange = () => {
+    this.resetParameters();
+  
     window.open('draw_molecule','Draw Molecule','width=500,height=450,scrollbars=no,resizable=yes');
   };
 
-  handleFileChange = (event) => {
-    const file = event.target.files[0];
-    this.setState({ upload_file: file })
+  handleFileChange = (event, type_allowed) => {
+    this.resetParameters();
+    
+    if (type_allowed){
+      const file = event.target.files[0];
+      this.setState({ upload_file: file })
+    }
+  };
+  
+  handleParameterErrors = (error_type) => {
+    let warning = document.getElementById("warning");
+    if (error_type == 0){
+      warning.innerHTML = "File Type Not Supported.";
+      return false;
+    }
+    if (error_type == -1){
+      warning.innerHTML = "Please Set Parameters.";
+      return false;
+    }
+    return true;
   };
 
   matchAttribute = (id) => {
@@ -184,13 +212,15 @@ export default observer(class VariantPicker extends Component {
   }
 
   resetParameters(){
+    let warning = document.getElementById("warning");
+    warning.innerHTML = "";
     this.setState({ upload_file: null });
     $('#id_molecule').text('');
   }
 
   render () {
     const { store, variantAttributes } = this.props;
-    const { errors, selection, typeSelection, param_file_disabled, upload_file, draw_molecule_disabled, draw_showed, molecule_value } = this.state;
+    const { errors, selection, typeSelection, param_file_disabled, upload_file, draw_molecule_disabled, draw_showed, molecule_value, style } = this.state;
     const disableAddToCart = store.isEmpty || !this.checkVariantAvailability();
 
     const addToCartBtnClasses = classNames({
@@ -213,7 +243,10 @@ export default observer(class VariantPicker extends Component {
           draw_showed={draw_showed}
           handleDrawChange={this.handleDrawChange}
           molecule_value={molecule_value}
+          upload_file={upload_file}
+          handleParameterErrors={this.handleParameterErrors}
         />
+        <div className="variant-picker__warning"><span id="warning"></span></div>
         <div className="clearfix">
           <div className="form-group">
             <button

@@ -5,9 +5,13 @@
   }
   &__label {
     margin-bottom: $global-margin;
-
   }
   &__options {
+    display: block;
+  }
+  &__warning {
+    margin-bottom: $global-margin;
+    color: $red;
     display: block;
   }
   &__option {
